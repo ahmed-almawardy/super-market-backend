@@ -9,7 +9,7 @@ from sqlalchemy.orm import Session
 from apimodels import Product, ProductCreate
 from db import Product as DBProduct
 from db import get_session
-from db.repos import DBRepo
+from db.repos import DBRepo, VercelRepo
 
 app = FastAPI(
     title="Fresh Expiry API",
@@ -36,6 +36,7 @@ def root():
         "products_endpoint": "/api/products",
     }
 
+DB = []
 
 @app.get("/health", tags=["Health"])
 def health():
@@ -46,8 +47,7 @@ def health():
 def get_products(
     session: Annotated[Session, Depends(get_session)],
 ):
-    """Return inventory products. Replace this demo list with your database query."""
-    return session.query(DBProduct).all()
+    return VercelRepo(DB).all()
 
 
 @app.post("/api/products/upload", status_code=200)
@@ -59,6 +59,6 @@ async def upload_products(
     records = pd.read_csv(BytesIO(data), encoding="utf-8-sig").to_dict(
             orient="records"
         )
-    repo = DBRepo(session)
+    repo = VercelRepo(DB)
     repo.add_all(records)
     return {"status": "ok"}
