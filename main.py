@@ -14,6 +14,7 @@ from db.repos import DBRepo
 app = FastAPI(
     title="Fresh Expiry API",
     version="1.0.0",
+    debug=True,
     description="Product inventory and expiry dates",
 )
 
