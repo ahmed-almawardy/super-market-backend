@@ -9,6 +9,7 @@ from sqlalchemy.orm import Session
 from apimodels import Product, ProductCreate
 from db import Product as DBProduct
 from db import get_session
+from db.repos import DBRepo
 
 app = FastAPI(
     title="Fresh Expiry API",
@@ -54,12 +55,9 @@ async def upload_products(
     file: Annotated[UploadFile, File(...)],
 ):
     data = await file.read()
-    post_data = [
-        DBProduct(**ProductCreate.model_validate(ro).model_dump())
-        for ro in pd.read_csv(BytesIO(data), encoding="utf-8-sig").to_dict(
+    records = pd.read_csv(BytesIO(data), encoding="utf-8-sig").to_dict(
             orient="records"
         )
-    ]
-    session.add_all(post_data)
-    session.commit()
+    repo = DBRepo(session)
+    repo.add_all(records)
     return {"status": "ok"}
