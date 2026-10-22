@@ -1,3 +1,5 @@
+from datetime import date, datetime
+
 from apimodels import ProductCreate, Product
 from db import Product as DBProduct
 
@@ -29,3 +31,4 @@ class VercelRepo:
             ro_dic['id'] = len(self.db)  + 1
             post_data.append(Product(**ro_dic))
         self.db.extend(post_data)
+
